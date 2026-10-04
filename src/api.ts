@@ -47,3 +47,7 @@ export async function createTodo(title: string) {
     { title }
   );
 }
+
+export async function deleteTodo(id: string) {
+  return sendJson<void>("DELETE", `/todos/${id}`);
+}

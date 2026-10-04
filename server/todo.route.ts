@@ -76,4 +76,26 @@ export function registerTodoRoutes(app: ReturnType<typeof import("./app.js").cre
       }
     }),
   );
+
+  app.delete(
+    "/todos/:id",
+    route(async (request: Request, response: Response) => {
+      const { id } = request.params;
+      const todoId = Array.isArray(id) ? id[0] : id;
+
+      try {
+        await prisma.todo.delete({
+          where: { id: todoId },
+        });
+        response.status(204).send();
+      } catch (error) {
+        // Prisma error: record not found
+        if (error instanceof Error && (error.message.includes("Record to delete not found") || error.message.includes("not found"))) {
+          response.status(404).json({ error: "Todo not found" });
+        } else {
+          throw error;
+        }
+      }
+    }),
+  );
 }

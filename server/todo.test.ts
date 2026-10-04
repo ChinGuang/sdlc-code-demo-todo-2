@@ -244,3 +244,42 @@ describe("PATCH /todos/:id", () => {
     expect(response.body).toEqual({ error: "Todo not found" });
   });
 });
+
+describe("DELETE /todos/:id", () => {
+  const app = createApp((app) => {
+    registerHealthRoutes(app);
+    registerTodoRoutes(app);
+  });
+
+  beforeEach(async () => {
+    await prisma.todo.deleteMany();
+  });
+
+  afterEach(async () => {
+    await prisma.$disconnect();
+  });
+
+  it("deletes an existing todo and returns 204", async () => {
+    const todo = await prisma.todo.create({
+      data: { title: "Todo to delete", completed: false },
+    });
+
+    let response = await request(app).get(`/todos`);
+    expect(response.body).toHaveLength(1);
+
+    response = await request(app).delete(`/todos/${todo.id}`).expect(204);
+
+    response = await request(app).get(`/todos`);
+    expect(response.body).toHaveLength(0);
+  });
+
+  it("returns 404 when todo does not exist", async () => {
+    const fakeId = "00000000-0000-0000-0000-000000000000";
+    const response = await request(app)
+      .delete(`/todos/${fakeId}`)
+      .expect("Content-Type", /json/)
+      .expect(404);
+
+    expect(response.body).toEqual({ error: "Todo not found" });
+  });
+});

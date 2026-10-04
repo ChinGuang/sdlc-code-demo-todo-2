@@ -3,6 +3,7 @@ import { HealthScreen } from "./screens/HealthScreen";
 import { TodoListScreen } from "./screens/TodoListScreen";
 import { CreateTodoScreen } from "./screens/CreateTodoScreen";
 import { ToggleTodoScreen } from "./screens/ToggleTodoScreen";
+import { DeleteTodoScreen } from "./screens/DeleteTodoScreen";
 
 /**
  * Every screen of the UI Spec is a Route here, and screens move between each
@@ -17,6 +18,7 @@ export function App() {
         <Link to="/health">Health</Link>
         <Link to="/create">Create Todo</Link>
         <Link to="/toggle">Toggle Todo</Link>
+        <Link to="/delete">Delete Todo</Link>
       </nav>
       <main>
         <Routes>
@@ -24,6 +26,7 @@ export function App() {
           <Route path="/health" element={<HealthScreen />} />
           <Route path="/create" element={<CreateTodoScreen />} />
           <Route path="/toggle" element={<ToggleTodoScreen />} />
+          <Route path="/delete" element={<DeleteTodoScreen />} />
           <Route path="*" element={<p>This page does not exist.</p>} />
         </Routes>
       </main>
