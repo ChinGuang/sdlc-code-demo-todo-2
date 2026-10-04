@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { HealthScreen } from "./HealthScreen.js";
+import { HealthScreen } from "./HealthScreen";
 
 afterEach(() => vi.unstubAllGlobals());
 

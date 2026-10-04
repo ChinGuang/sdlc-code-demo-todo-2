@@ -1,6 +1,6 @@
 import { Link, Route, Routes } from "react-router-dom";
-import { HealthScreen } from "./screens/HealthScreen.js";
-import { TodoListScreen } from "./screens/TodoListScreen.js";
+import { HealthScreen } from "./screens/HealthScreen.tsx";
+import { TodoListScreen } from "./screens/TodoListScreen.tsx";
 
 /**
  * Every screen of the UI Spec is a Route here, and screens move between each

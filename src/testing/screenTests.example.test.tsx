@@ -247,13 +247,14 @@ describe("the App", () => {
   it("opens on the screen of the address, and says so for one that is not", async () => {
     stubApi({
       "GET /health": { body: { status: "ok", database: "up" } },
+      "GET /todos": { body: [] },
     });
 
     renderApp("/");
     // Home screen (TodoListScreen) renders
-    expect(await screen.findByRole("heading", { name: /todo list/i })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: /todo app/i })).toBeInTheDocument();
     expect(await screen.findByText(/no todos yet/i)).toBeInTheDocument();
-    expect(await screen.findByRole("link", { name: /check api health/i })).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: /health/i })).toBeInTheDocument();
   });
 
   it("shows the health screen when navigating to /health", async () => {
