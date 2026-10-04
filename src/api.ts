@@ -20,11 +20,30 @@ export async function sendJson<T = void>(
     headers: { "Content-Type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
-  if (!response.ok)
-    throw new Error(`${method} ${path} failed: ${response.status}`);
+  if (!response.ok) {
+    // Try to get error message from response body
+    let errorMessage = `${method} ${path} failed: ${response.status}`;
+    try {
+      const errorBody = await response.json();
+      if (errorBody && typeof errorBody === 'object' && 'error' in errorBody) {
+        errorMessage = String(errorBody.error);
+      }
+    } catch (_) {
+      // ignore
+    }
+    throw new Error(errorMessage);
+  }
   return (response.status === 204 ? undefined : await response.json()) as T;
 }
 
 export type Health = { status: "ok" | "degraded"; database: "up" | "down" };
 
 export const getHealth = () => getJson<Health>("/health");
+
+export async function createTodo(title: string) {
+  return sendJson<{ id: string; title: string; completed: boolean; createdAt: string; updatedAt: string }>(
+    "POST",
+    "/todos",
+    { title }
+  );
+}

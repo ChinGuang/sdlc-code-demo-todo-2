@@ -47,3 +47,63 @@ describe("GET /todos", () => {
     expect(second.completed).toBe(true);
   });
 });
+
+describe("POST /todos", () => {
+  const app = createApp((app) => {
+    registerHealthRoutes(app);
+    registerTodoRoutes(app);
+  });
+
+  beforeEach(async () => {
+    await prisma.todo.deleteMany();
+  });
+
+  afterEach(async () => {
+    await prisma.$disconnect();
+  });
+
+  it("creates a todo and returns 201 with the created todo", async () => {
+    const response = await request(app)
+      .post("/todos")
+      .send({ title: "Learn TDD" })
+      .expect("Content-Type", /json/)
+      .expect(201);
+
+    expect(response.body).toHaveProperty("id");
+    expect(response.body.title).toBe("Learn TDD");
+    expect(response.body.completed).toBe(false);
+    expect(response.body.createdAt).toBeDefined();
+    expect(response.body.updatedAt).toBeDefined();
+  });
+
+  it("returns 400 when title is missing", async () => {
+    const response = await request(app)
+      .post("/todos")
+      .send({})
+      .expect("Content-Type", /json/)
+      .expect(400);
+
+    expect(response.body).toEqual({ error: "Validation error" });
+  });
+
+  it("returns 400 when title is empty string", async () => {
+    const response = await request(app)
+      .post("/todos")
+      .send({ title: "" })
+      .expect("Content-Type", /json/)
+      .expect(400);
+
+    expect(response.body).toEqual({ error: "Validation error" });
+  });
+
+  it("returns 400 when title exceeds 200 characters", async () => {
+    const longTitle = "a".repeat(201);
+    const response = await request(app)
+      .post("/todos")
+      .send({ title: longTitle })
+      .expect("Content-Type", /json/)
+      .expect(400);
+
+    expect(response.body).toEqual({ error: "Validation error" });
+  });
+});
