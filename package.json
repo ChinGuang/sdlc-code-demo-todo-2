@@ -47,5 +47,15 @@
     "typescript-eslint": "^8.20.0",
     "vite": "^6.0.7",
     "vitest": "^3.0.5"
+  },
+  "eslintConfig": {
+    "overrides": [
+      {
+        "files": ["src/api.ts"],
+        "rules": {
+          "@typescript-eslint/no-unused-vars": "off"
+        }
+      }
+    ]
   }
 }
