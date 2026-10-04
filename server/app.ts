@@ -5,7 +5,6 @@ import express, {
   type Response,
 } from "express";
 import { STATUS_CODES } from "node:http";
-import { prisma } from "./prisma.js";
 
 /**
  * The API. A Slice adds its routes through `register`, so they sit before the
@@ -15,19 +14,6 @@ import { prisma } from "./prisma.js";
 export function createApp(register?: (app: Express) => void): Express {
   const app = express();
   app.use(express.json());
-
-  app.get(
-    "/health",
-    route(async (_request, response) => {
-      const database = await prisma
-        .$queryRaw`SELECT 1`.then(() => "up" as const)
-        .catch(() => "down" as const);
-      response.status(database === "up" ? 200 : 503).json({
-        status: database === "up" ? "ok" : "degraded",
-        database,
-      });
-    }),
-  );
 
   register?.(app);
   app.use(errorHandler);

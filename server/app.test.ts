@@ -1,17 +1,27 @@
 import request from "supertest";
 import { describe, expect, it, vi } from "vitest";
-import { createApp, route } from "./app.js";
+import { createApp } from "./app.js";
+import { registerHealthRoutes } from "./health.route.js";
+import { prisma } from "./prisma.js";
 
 describe("GET /health", () => {
   it("reports the API and its database", async () => {
-    const response = await request(createApp()).get("/health");
+    const response = await request(createApp(registerHealthRoutes)).get("/health");
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ status: "ok", database: "up" });
   });
 
+  it("reports degraded when database is down", async () => {
+    vi.spyOn(prisma, "$queryRaw").mockRejectedValueOnce(new Error("db down"));
+    const response = await request(createApp(registerHealthRoutes)).get("/health");
+    expect(response.status).toBe(503);
+    expect(response.body).toEqual({ status: "degraded", database: "down" });
+    vi.restoreAllMocks();
+  });
+
   it("answers 404 for a route that does not exist", async () => {
-    const response = await request(createApp()).get("/nope");
+    const response = await request(createApp(registerHealthRoutes)).get("/nope");
 
     expect(response.status).toBe(404);
   });
@@ -19,7 +29,7 @@ describe("GET /health", () => {
 
 describe("a body that is not JSON", () => {
   it("answers 400, the client's mistake, saying nothing more", async () => {
-    const response = await request(createApp())
+    const response = await request(createApp(registerHealthRoutes))
       .post("/health")
       .set("Content-Type", "application/json")
       .send("{not json");
@@ -35,9 +45,11 @@ describe("a route that throws", () => {
     const app = createApp((server) =>
       server.get(
         "/boom",
-        route(async () => {
-          throw new Error("connection string user:hunter2@db");
-        }),
+        (req, res, next) => {
+          Promise.resolve().then(() => {
+            throw new Error("connection string user:hunter2@db");
+          }).catch(next);
+        },
       ),
     );
 

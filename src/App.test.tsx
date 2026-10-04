@@ -28,7 +28,27 @@ describe("App", () => {
 
     renderAt("/");
 
-    expect(await screen.findByText("API ok, database up")).toBeInTheDocument();
+    // TodoListScreen renders
+    expect(await screen.findByRole("heading", { name: /todo list/i })).toBeInTheDocument();
+    expect(await screen.findByText(/no todos yet/i)).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: /check api health/i })).toBeInTheDocument();
+  });
+
+  it("shows the health screen when navigating to /health", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          new Response(JSON.stringify({ status: "ok", database: "up" }), {
+            status: 200,
+          }),
+      ),
+    );
+
+    renderAt("/health");
+
+    expect(await screen.findByText("Health Check")).toBeInTheDocument();
+    expect(await screen.findByText("Status: ok")).toBeInTheDocument();
   });
 
   it("says so when a route does not exist", () => {

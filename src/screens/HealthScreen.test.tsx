@@ -15,12 +15,35 @@ function stubHealth(body: unknown, ok = true) {
 }
 
 describe("HealthScreen", () => {
+  it("shows loading state initially", async () => {
+    // Delay the response to see loading state
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => new Promise(() => {})),
+    );
+
+    render(<HealthScreen />);
+
+    expect(screen.getByText("Health Check")).toBeInTheDocument();
+    expect(screen.getByText("Status: checking...")).toBeInTheDocument();
+  });
+
   it("shows the API status once it loads", async () => {
     stubHealth({ status: "ok", database: "up" });
 
     render(<HealthScreen />);
 
-    expect(await screen.findByText("API ok, database up")).toBeInTheDocument();
+    expect(await screen.findByText("Health Check")).toBeInTheDocument();
+    expect(await screen.findByText("Status: ok")).toBeInTheDocument();
+  });
+
+  it("shows degraded status when database down", async () => {
+    stubHealth({ status: "degraded", database: "down" });
+
+    render(<HealthScreen />);
+
+    expect(await screen.findByText("Health Check")).toBeInTheDocument();
+    expect(await screen.findByText("Status: degraded")).toBeInTheDocument();
   });
 
   it("shows an error when the API cannot be reached", async () => {
@@ -28,8 +51,7 @@ describe("HealthScreen", () => {
 
     render(<HealthScreen />);
 
-    expect(
-      await screen.findByText(/GET \/health failed: 503/),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Health Check")).toBeInTheDocument();
+    expect(await screen.findByText("Status: error")).toBeInTheDocument();
   });
 });
