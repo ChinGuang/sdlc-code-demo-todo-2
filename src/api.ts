@@ -28,7 +28,7 @@ export async function sendJson<T = void>(
       if (errorBody && typeof errorBody === 'object' && 'error' in errorBody) {
         errorMessage = String(errorBody.error);
       }
-    } catch (__) {
+    } catch (_) {
       // ignore
     }
     throw new Error(errorMessage);
