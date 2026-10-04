@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { renderRoute, currentPath } from "../testing/screens";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { stubApi } from "../testing/stubApi";
 import { CreateTodoScreen } from "./CreateTodoScreen";
 

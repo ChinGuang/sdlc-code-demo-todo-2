@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { getJson, sendJson } from "../api.js";
 
 type Todo = {
@@ -11,7 +10,6 @@ type Todo = {
 };
 
 export function DeleteTodoScreen() {
-  const navigate = useNavigate();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

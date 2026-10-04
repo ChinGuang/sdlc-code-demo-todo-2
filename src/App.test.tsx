@@ -1,13 +1,12 @@
 import { screen } from "@testing-library/react";
 import { renderApp } from "./testing/screens.js";
 import { describe, expect, it, vi } from "vitest";
-import { stubApi } from "./testing/stubApi.js";
 
 describe("App", () => {
   it("shows the screen of the route it is asked for", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async (url) => {
+      vi.fn(async (url: string) => {
         if (url.endsWith("/health")) {
           return new Response(JSON.stringify({ status: "ok", database: "up" }), {
             status: 200,

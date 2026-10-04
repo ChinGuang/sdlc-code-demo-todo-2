@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { renderRoute } from "../testing/screens";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { stubApi } from "../testing/stubApi";
 import { DeleteTodoScreen } from "./DeleteTodoScreen";
 import { press } from "../testing/screens";
